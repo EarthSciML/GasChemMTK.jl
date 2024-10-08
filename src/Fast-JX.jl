@@ -131,6 +131,7 @@ end
 # get information about the type and units of the output.
 j_mean_H2O2(t, lat, long, T::DynamicQuantities.Quantity) = 0.0u"s^-1"
 j_mean_CH2Oa(t, lat, long, T::DynamicQuantities.Quantity) = 0.0u"s^-1"
+j_mean_CH2Ob(t, lat, long, T::DynamicQuantities.Quantity) = 0.0u"s^-1"
 j_mean_CH3OOH(t, lat, long, T::DynamicQuantities.Quantity) = 0.0u"s^-1"
 j_mean_NO2(t, lat, long, T::DynamicQuantities.Quantity) = 0.0u"s^-1"
 j_mean_o31D(t, lat, long, T::DynamicQuantities.Quantity) = 0.0u"s^-1"
@@ -139,6 +140,8 @@ j_mean_H2O2(t, lat, long, T) = j_mean(σ_H2O2_interp, ϕ_H2O2_jx, t, lat, long, 
 @register_symbolic j_mean_H2O2(t, lat, long, T)
 j_mean_CH2Oa(t, lat, long, T) = j_mean(σ_CH2Oa_interp, ϕ_CH2Oa_jx, t, lat, long, T)
 @register_symbolic j_mean_CH2Oa(t, lat, long, T)
+j_mean_CH2Ob(t, lat, long, T) = j_mean(σ_CH2Ob_interp, ϕ_CH2Ob_jx, t, lat, long, T)
+@register_symbolic j_mean_CH2Ob(t, lat, long, T)
 j_mean_CH3OOH(t, lat, long, T) = j_mean(σ_CH3OOH_interp, ϕ_CH3OOH_jx, t, lat, long, T)
 @register_symbolic j_mean_CH3OOH(t, lat, long, T)
 j_mean_NO2(t, lat, long, T) = j_mean(σ_NO2_interp, ϕ_NO2_jx, t, lat, long, T)
@@ -170,17 +173,17 @@ function FastJX(;name=:FastJX)
     @variables j_o31D(t) = 4.0 * 10.0^-3 [unit = u"s^-1"]
     @variables j_CH3OOH(t) = 8.9573 * 10.0^-6 [unit = u"s^-1"]
     @variables j_NO2(t) = 0.0149 [unit = u"s^-1"]
-    # TODO(JL): What's difference between the two photolysis reactions of CH2O, do we really need both? 
-    # (@variables j_CH2Ob(t) = 0.00014 [unit = u"s^-1"]) (j_CH2Ob ~ mean_J_CH2Ob(t,lat,T)*j_unit)
+    @variables j_CH2Ob(t) = 0.00014 [unit = u"s^-1"]
 
     eqs = [
         j_h2o2 ~ j_mean_H2O2(t, lat, long, T)
         j_CH2Oa ~ j_mean_CH2Oa(t, lat, long, T)
+        j_CH2Ob ~ j_mean_CH2Ob(t, lat, long, T)
         j_o31D ~ j_mean_o31D(t, lat, long, T)
         j_CH3OOH ~ j_mean_CH3OOH(t, lat, long, T)
         j_NO2 ~ j_mean_NO2(t, lat, long, T)
     ]
 
-    ODESystem(eqs, t, [j_h2o2, j_CH2Oa, j_o31D, j_CH3OOH, j_NO2], [lat, long, T]; name=name,
+    ODESystem(eqs, t, [j_h2o2, j_CH2Oa, j_CH2Ob, j_o31D, j_CH3OOH, j_NO2], [lat, long, T]; name=name,
         metadata=Dict(:coupletype => FastJXCoupler))
 end

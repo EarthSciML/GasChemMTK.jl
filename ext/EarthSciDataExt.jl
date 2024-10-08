@@ -30,8 +30,8 @@ function EarthSciMLBase.couple2(c::GasChem.SuperFastCoupler, e::EarthSciData.NEI
         c.NO2 => e.NO2 => uconv / MW_NO2,
         c.NO => e.NO => uconv / MW_NO,
         c.CH2O => e.FORM => uconv / MW_FORM,
-        c.CH4 => e.CH4 => uconv / MW_CH4,
         c.CO => e.CO => uconv / MW_CO,
+        #c.SO2 => e.SULF => uconv / MW_SO2, #TODO Need to find a way to make c.SO2 => e.SULF + e.SO2 => uconv / MW_SO2
         c.SO2 => e.SO2 => uconv / MW_SO2,
         c.ISOP => e.ISOP => uconv / MW_ISOP,
     ))
@@ -39,6 +39,16 @@ end
 
 function EarthSciMLBase.couple2(c::GasChem.SuperFastCoupler, g::EarthSciData.GEOSFPCoupler)
     c, g = c.sys, g.sys
+
+    @constants(
+        MW_H2O = 18.015*10^-3, [unit = u"kg/mol", description="Water molar mass"],
+        MW_air = 28.97*10^-3, [unit = u"kg/mol", description = "Air molar mass"],
+        ppbpersecond = 1e9, [unit = u"ppb/s"],
+    )
+    uconv = MW_air/MW_H2O*ppbpersecond
+    operator_compose(convert(ODESystem, c), g, Dict(
+        c.H2O => g.I3₊QV => uconv,
+    ))
 
     c = param_to_var(c, :T, :P)
     ConnectorSystem([
