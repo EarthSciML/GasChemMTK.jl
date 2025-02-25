@@ -12,17 +12,13 @@ ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 
 [compat]
-
-ModelingToolkit = "9"
+Catalyst = "14"
+DataFrames = "1"
+DifferentialEquations = "7"
 Documenter = "1"
 DynamicQuantities = "1"
-GasChem = "0"
-DifferentialEquations = "7"
-EarthSciMLBase = "0.19, 0.20"
 EarthSciData = "0.10, 0.11, 0.12"
-DataFrames = "1"
-Catalyst = "14"
+EarthSciMLBase = "0.19, 0.20, 0.21"
+GasChem = "0"
+ModelingToolkit = "9"
 Plots = "1"
-
-
-
